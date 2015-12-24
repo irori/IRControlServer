@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         Log.w(TAG, "Web server initialized.");
 
         player = new IRCodePlayer();
+
+        System.setProperty("java.io.tmpdir", getCacheDir().getPath());
     }
 
     @Override
