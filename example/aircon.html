@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <meta name="viewport" content="width=320">
+ <script>
+ IRControlServerURL = 'http://192.168.1.5:8080/';
+
+ COMMANDS = [
+   {
+     name: 'ON',
+     data: {"format":"raw","freq":38,"data":[6349,3220,816 /* ... */]}
+   },
+   {
+     name: 'OFF',
+     data: {"format":"raw","freq":38,"data":[6395,3175,816 /* ... */]}
+   }
+   // Add your IR code here
+ ];
+ </script>
+ <style>
+   button {
+     margin: 16px;
+     width: 100px;
+     height: 40px;
+   }
+ </style>
+ <title>Remote controller</title>
+</head>
+<body>
+<div id="buttons"></div>
+<p id="output"></p>
+<script>
+ function addButton(name, ircode) {
+     var button = document.createElement('button');
+     button.innerText = name;
+     var output = document.getElementById('output');
+     button.onclick = function() {
+         button.setAttribute('disabled', 'true');
+         output.textContent = '';
+
+         fetch(IRControlServerURL, {
+             method: 'post',
+             mode: 'no-cors',
+             headers: {'Content-Type': 'application/json'},
+             body: JSON.stringify(ircode)
+         }).then(function(resp) {
+             return resp.text();
+         }).then(function(body) {
+             button.removeAttribute('disabled');
+             output.textContent = body;
+         }).catch(function(err) {
+             button.removeAttribute('disabled');
+             output.textContent = err;
+         });
+     }
+     document.getElementById('buttons').appendChild(button);
+ }
+ COMMANDS.forEach(function(cmd) {
+     addButton(cmd.name, cmd.data);
+ });
+</script>
+</body>
+</html>
