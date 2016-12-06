@@ -3,6 +3,7 @@ package org.irorin.ircontrolserver;
 import android.media.AudioManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -10,6 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +23,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int PORT = 8080;
     private Server server;
     private IRCodePlayer player;
+    static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        TextView logBox = (TextView)findViewById(R.id.logBox);
+        logBox.setMovementMethod(new ScrollingMovementMethod());
 
         server = new Server();
         try {
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     final String json = map.get("postData");
                     JSONObject data = new JSONObject(json);
                     player.play(data);
-                    log("IR code playback started");
+                    log("playback started");
                 } catch (IOException | ResponseException | JSONException e) {
                     e.printStackTrace();
                     log(e.toString());
@@ -77,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             final TextView logBox = (TextView)findViewById(R.id.logBox);
             logBox.post(new Runnable() {
                 public void run() {
-                    logBox.append(s + "\n");
+                    logBox.append(dateFormat.format(Calendar.getInstance().getTime()) + s + "\n");
                 }
             });
         }
