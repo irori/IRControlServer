@@ -4,6 +4,7 @@ import android.media.AudioManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,10 +50,12 @@ public class MainActivity extends AppCompatActivity {
     private class Server extends NanoHTTPD {
         public Server() {
             super(PORT);
+            log("Listening on port " + PORT);
         }
 
         @Override
         public Response serve(IHTTPSession session) {
+            log("Request from " + session.getHeaders().get("remote-addr"));
             if (session.getMethod() == Method.POST) {
                 final HashMap<String, String> map = new HashMap<String, String>();
                 try {
@@ -60,16 +63,23 @@ public class MainActivity extends AppCompatActivity {
                     final String json = map.get("postData");
                     JSONObject data = new JSONObject(json);
                     player.play(data);
-                } catch (IOException e) {
+                    log("IR code playback started");
+                } catch (IOException | ResponseException | JSONException e) {
                     e.printStackTrace();
-                } catch (ResponseException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    log(e.toString());
                 }
             }
             String answer = "OK";
             return newFixedLengthResponse(answer);
+        }
+
+        void log(final String s) {
+            final TextView logBox = (TextView)findViewById(R.id.logBox);
+            logBox.post(new Runnable() {
+                public void run() {
+                    logBox.append(s + "\n");
+                }
+            });
         }
     }
 }

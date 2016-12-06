@@ -10,8 +10,8 @@
     tools:context="org.irorin.ircontrolserver.MainActivity">
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/logBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="" />
 </RelativeLayout>
