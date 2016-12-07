@@ -1,6 +1,7 @@
 package org.irorin.ircontrolserver;
 
 import android.media.AudioManager;
+import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -56,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
     private class Server extends NanoHTTPD {
         public Server() {
             super(PORT);
-            log("Listening on port " + PORT);
+            WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+            int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+            log(String.format("Server started on \nhttp://%d.%d.%d.%d:%d/",
+                    (ipAddress & 0xff),
+                    (ipAddress >> 8 & 0xff),
+                    (ipAddress >> 16 & 0xff),
+                    (ipAddress >> 24 & 0xff),
+                    PORT));
         }
 
         @Override
